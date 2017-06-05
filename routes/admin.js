@@ -40,15 +40,22 @@ router.post('/admin/article/new', function(req, res, next) {
   if(!title) return res.json({error:"请填写标题"});
   if(!body) return res.json({error:"请填写内容"});
 
-  //保存到数据库
-  var a=new Article({
-    title:title,
-    body:body,
-    date:new Date()
-  });
-  a.save(function (err,ret) {
-    if(err) return res.json({error:err.toString()});
-    res.json({success:ret});
+  //检查标题是否重复
+  Article.findOne({title:title},function (err,ret) {
+    if (err) return res.json({error:err.toString()});
+    //是否有查询到结果
+    if(ret) return res.json({error:"数据库中已存在相同标题的文章"});
+
+    //保存到数据库
+    var a=new Article({
+      title:title,
+      body:body,
+      date:new Date()
+    });
+    a.save(function (err,ret) {
+      if(err) return res.json({error:err.toString()});
+      res.json({success:ret});
+    });
   });
 });
 
