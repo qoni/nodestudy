@@ -5,8 +5,12 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var index = require('./routes/index');
-var users = require('./routes/users');
+var config=require('./config');
+
+//初始化mongodb
+require("./init/mongodb");
+
+var admin = require('./routes/admin');
 
 var app = express();
 
@@ -28,8 +32,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //注册路由
-app.use('/', index);
-app.use('/users', users);
+app.use('/', admin);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -49,4 +52,14 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-app.listen(3000);
+app.listen(config.port);
+
+// var Article=require("./models/Article");
+// var a=new Article({
+//   title:"测试标题",
+//   body:"测试内容",
+//   date:new Date()
+// });
+// a.save(function(err,ret){
+//   console.log(err,ret)
+// });

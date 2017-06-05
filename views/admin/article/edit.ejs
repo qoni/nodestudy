@@ -1,0 +1,29 @@
+<%-include('../header')%>
+  <body>
+    <form>
+      <div class="form-group">
+        <label>标题</label>
+        <input type="text" id="title" class="form-control" placeholder="">
+      </div>
+      <div class="form-group">
+        <label>内容</label>
+        <textarea id="body" class="form-control" placeholder="" row="5"></textarea>
+      </div>
+      <button type="button" id="submit" class="btn btn-primary">保存</button>
+    </form>
+  </body>
+<%-include('../footer')%>
+<script>
+  $("#submit").click(function () {
+    var data={
+      title:$("#title").val(),
+      body:$("#body").val()
+    }
+    $.post("/admin/article/new",data,function (ret) {
+      if(ret.error) return alert(ret.error);
+      console.log(ret);
+      window.location.href='/admin/article'
+    })
+  })
+</script>
+
