@@ -2,6 +2,7 @@
   <body>
     <h1><%= article.title %></h1>
     <p><%= article.date %></p>
+    <a href="/admin/article/edit/<%= article.id %>" class="btn btn-primary">编辑</a>
     <div><%= article.body %></div>
   </body>
 <%-include('../footer')%>

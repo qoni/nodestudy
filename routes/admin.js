@@ -32,6 +32,7 @@ router.get('/admin/article', function(req, res, next) {
     Article.find({})
         .skip((page-1)*limit)
         .limit(limit)
+        .sort({date: -1})
         .exec(
             function (err,ret) {
               if (err) return next(err);
@@ -39,6 +40,18 @@ router.get('/admin/article', function(req, res, next) {
               res.render("admin/article/list");
             }
         )
+  });
+});
+
+//删除文章内容页
+router.post('/admin/article', function(req, res, next) {
+  var id=req.body.mid;
+  Article.findOne({_id:id},function (err,ret) {
+    if (err) return res.json({error:err.toString()});
+    Article.remove({ _id:id}, function (err) {
+      if (err) return next(err);
+      res.json({success:ret});
+    });
   });
 });
 
@@ -50,6 +63,8 @@ router.get('/admin/article/view/:id', function(req, res, next) {
     res.render("admin/article/view");
   })
 });
+
+
 
 /* 录入文章页. */
 router.get('/admin/article/new', function(req, res, next) {
@@ -129,5 +144,7 @@ router.post('/admin/article/edit/:id', function(req, res, next) {
     });
   });
 });
+
+
 
 module.exports = router;

@@ -1,10 +1,78 @@
 <%-include('../header')%>
   <body>
-    <a href="/admin/article/new" class="btn btn-primary">添加</a>
+    <p>总共有<%= locals.count %>篇文章,当前在第<%=locals.page%>页</p>
+    <a href="/admin/article/new" class="btn btn-primary" style="margin-bottom: 10px;">添加</a>
     <div class="list-group">
       <% locals.list.forEach(function(item){ %>
-      <a href="/admin/article/view/<%= item.id %>" class="list-group-item"><%= item.title %></a>
-      <% });%>
+      <div class="list-group-item">
+        <a href="/admin/article/view/<%= item.id %>">
+          <%= item.title %>
+        </a>
+        <a href="javascript:;" mid="<%=item.id%>" class="delete btn btn-danger navbar-right" style="margin: -8px 0 0 0;">删除</a>
+        <span class="navbar-right" style="margin-right: 10px;">
+          <%= item.date.getFullYear()+'-'+item.date.getHours()+':'+item.date.getMinutes()+':'+item.date.getSeconds() %>
+        </span>
+      </div>
+        <% });%>
     </div>
+    <ul class="pagination" id="pagination">
+      <!--<li class="disabled"><a href="?page=<%= locals.page -1 %>" aria-label="Previous"><span aria-hidden="true">«</span></a></li>-->
+      <!--<li class="active"><a href="#"><%=locals.page%> <span class="sr-only">(current)</span></a></li>-->
+      <!--<li><a href="?page=<%= locals.page +1 %>" aria-label="Next"><span aria-hidden="true">»</span></a></li>-->
+    </ul>
   </body>
 <%-include('../footer')%>
+<script>
+  //locals.pageCount，locals.limit，locals.currentPage分别是数据库数量，分页大小，当前分页
+  $(function () {
+    if($("#pagination")){
+      var pageCount =<%= locals.count %>;
+      var pageSize = <%= locals.limit %>;
+      var currentPage = <%= locals.page %>;
+      var counts,pageHtml="";
+      counts=Math.ceil(pageCount/pageSize);
+//      只有一页内容
+      if(pageCount<=pageSize){
+        pageHtml="";
+      }
+//      大于一页内容
+      if(pageCount>pageSize){
+        if(currentPage>1){
+          pageHtml+='<li><a href="/admin/article?page='+(currentPage-1)+'">上一页</a></li>';
+        }else{
+          pageHtml+='<li class="disabled"><a href="/admin/article?page='+(currentPage)+'">上一页</a></li>';
+        }
+        for (var i=0;i<counts;i++){
+          if(i>=(currentPage-counts)&&i<(currentPage+counts)){
+            if(i==(currentPage-1)){
+              pageHtml+='<li class="active"><a href="/admin/article?page='+(i+1)+'">'+(i+1)+'</a></li>';
+            }else{
+              pageHtml+= '<li><a href="/admin/article?page='+(i+1)+'">'+(i+1)+'</a></li>';
+            }
+          }
+        }
+        if(currentPage<counts){
+          pageHtml+= '<li><a href="/admin/article?page='+(currentPage+1)+'">下一页</a></li>';
+        }else{
+          pageHtml+= '<li class="disabled"><a href="/admin/article?page='+(currentPage)+'">下一页</a></li>';
+        }
+       }
+      $("#pagination").html(pageHtml);
+    }
+  });
+
+  $(document).on("click",".delete",function(){
+    var mid=$(this).attr("mid");
+    $(this).parent().remove();
+    $.ajax({
+      type:"post",
+      url:location.toString(),
+      data:{mid:mid},
+      dataType:"json",
+      success:function (data) {
+        console.log(data);
+        location.reload();
+      }
+    })
+  })
+</script>
