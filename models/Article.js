@@ -16,5 +16,5 @@ var Article = new Schema({
 });
 
 //访问模型
-conn.model('Article',Article);
-module.exports=conn.model('Article');
+conn.db.model('Article',Article);
+module.exports=conn.db.model('Article');
